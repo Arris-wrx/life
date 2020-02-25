@@ -9,6 +9,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 link_directories(${PROJECT_SOURCE_DIR}/lib)
 
-add_executable(life src/main.cpp)
+add_executable(life src/main.cpp src/Cell.cpp)
 target_include_directories(life PUBLIC ${PROJECT_SOURCE_DIR}/include)
 
