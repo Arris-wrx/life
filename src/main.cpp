@@ -103,5 +103,6 @@ int main()
         std::cout << std::endl;
     }
     std::cout << "\nForeach - OK" << std::endl;
+
     return 0;
 }
