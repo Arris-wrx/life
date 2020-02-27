@@ -76,6 +76,32 @@ int main()
     assert(field.at(0,0).value() == 1);
     std::cout << "OK" << std::endl;
 
+    assert(field.get(2,3).getCoordinates().first == 2);
+    assert(field.get(2,3).getCoordinates().second == 3);
+    std::cout << "OK" << std::endl;
 
+    auto nbh_it = it->begin();
+    assert(nbh_it->value() == 24);
+    std::cout << "OK" << std::endl;
+
+    assert((++(field.get(1,2).begin()))->value() == 5);
+    std::cout << "OK" << std::endl;
+
+    assert(field.begin()->begin()->value() == 30);
+    std::cout << "OK" << std::endl;
+
+    auto c = field.get(1,2);
+    for (auto a : c)
+         std::cout << a.value() << " ";
+    std::cout << "Foreach - OK" << std::endl;
+
+    for (auto a : field)
+    {
+        std::cout << a.value() << ": ";
+        for (auto c : a)
+            std::cout << c.value() << " ";
+        std::cout << std::endl;
+    }
+    std::cout << "\nForeach - OK" << std::endl;
     return 0;
 }

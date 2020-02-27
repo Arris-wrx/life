@@ -6,13 +6,19 @@
 #include <stdexcept>
 #include <random>
 
-template<typename T, int _Y, int _X>
+template<typename T, int _Col, int _Row>
 class TMatrix
 {
 public:
     TMatrix()
     {
-        Matrix = new Cell[_X * _Y];
+        Matrix = new Cell[_Row * _Col];
+        for (size_t i = 0; i < _Row * _Col; ++i)
+        {
+            Matrix[i]._matrix = this;
+            Matrix[i]._coord.A = i;
+            Matrix[i]._coord.toXY();
+        }
     }
 
     ~TMatrix()
@@ -21,17 +27,18 @@ public:
     }
 
     class Cell;
+    friend class Cell;
     class Iterator;
     class const_Iterator;
 
     size_t count()
     {
-        return _X * _Y;
+        return _Row * _Col;
     }
 
     std::pair<size_t, size_t> size()
     {
-        return std::make_pair(_X, _Y);
+        return std::make_pair(_Row, _Col);
     }
 
     Cell& at(const int _x, const int _y)
@@ -70,33 +77,101 @@ public:
     {
         return const_Iterator(this, count());
     }
-
+private:
+    struct Coord;
+public:
     class Cell
     {
     public:
-        Cell(T t) : val(t) {}
         Cell() {}
         ~Cell() {}
         class Neighborhood_Iterator;
+        friend class Neighborhood_Iterator;
+        friend class TMatrix;
 
         T& value()
         {
           return val;
         }
 
+        std::pair<int,int> getCoordinates()
+        {
+            return std::make_pair(_coord.X, _coord.Y);
+        }
+
+        Neighborhood_Iterator begin()
+        {
+            return Neighborhood_Iterator(this);
+        }
+
+        Neighborhood_Iterator end()
+        {
+            return Neighborhood_Iterator(this, 8);
+        }
+
         class Neighborhood_Iterator
         {
         public:
-            Neighborhood_Iterator() {}
+            Neighborhood_Iterator(Cell* C) : _cell(C), _aroundPos(0) {}
+            Neighborhood_Iterator(Cell* C, size_t N) : _cell(C), _aroundPos(N) {}
+            Neighborhood_Iterator(const Neighborhood_Iterator& it) {
+                _cell = it._cell;
+                _aroundPos = it._aroundPos;
+            }
+
+            ~Neighborhood_Iterator() {}
+
+            Cell& operator*()
+            {
+                Coord c;
+                c.X = _cell->_coord.X + Neighborhoods.at(_aroundPos).first;
+                c.Y = _cell->_coord.Y + Neighborhoods.at(_aroundPos).second;
+                c.toA();
+                return (*_cell->_matrix)[c.A];
+            }
+
+            Cell* operator->()
+            {
+                return &(operator*());
+            }
+
+            Neighborhood_Iterator& operator++()
+            {
+                if (_aroundPos < 8)
+                    ++ _aroundPos;
+                return *this;
+            }
+
+            Neighborhood_Iterator& operator=(const Neighborhood_Iterator& n_it)
+            {
+                if (&n_it == this)
+                    return *this;
+
+                _cell = n_it._cell;
+                _aroundPos = n_it._aroundPos;
+                return *this;
+            }
+
+            bool operator==(const Neighborhood_Iterator& n_it) const
+            {
+                return (_cell == n_it._cell && _aroundPos == n_it._aroundPos);
+            }
+
+            bool operator!=(const Neighborhood_Iterator& n_it) const
+            {
+                return (_cell != n_it._cell || _aroundPos != n_it._aroundPos);
+            }
 
         private:
             Cell* _cell;
+            size_t _aroundPos;
             std::vector<std::pair<int, int>> Neighborhoods = { {-1,-1},{-1,0},{-1,1},{0,-1},{0,1},{1,-1},{1,0},{1,1} };
         };
 
     private:
         T val;
-        int __X, __Y;
+        TMatrix* _matrix;
+        TMatrix::Coord _coord;
     };
 
     class Iterator
@@ -207,7 +282,6 @@ public:
     };
 
 private:
-    struct Coord;
     Cell* Matrix;
     Coord coord;
     Cell& operator[](const int A)
@@ -228,27 +302,27 @@ private:
         void toA()
         {
             normalizeXY();
-            A = _Y * X + Y;
+            A = _Col * X + Y;
         }
 
         void toXY()
         {
-            if (A >= _X * _Y)
+            if (A >= _Row * _Col)
                 throw std::out_of_range("Field x or y");
-            X = A % _X;
-            Y = A / _Y;
+            X = A / _Col;
+            Y = A % _Col;
         }
 
         void normalizeXY()
         {
             if (X >= 0)
-                X = X % _X;
+                X = X % _Row;
             else
-                X = _X + ((X % _X) == 0 ? -_X : (X % _X));
+                X = _Row + ((X % _Row) == 0 ? -_Row : (X % _Row));
             if (Y >= 0)
-                Y = Y % _Y;
+                Y = Y % _Col;
             else
-                Y = _Y + ((Y % _Y) == 0 ? -_Y : (Y % _Y));
+                Y = _Col + ((Y % _Col) == 0 ? -_Col : (Y % _Col));
         }
     };
 };
