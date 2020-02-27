@@ -327,4 +327,5 @@ private:
     };
 };
 
+
 #endif // TMATRIX_H
