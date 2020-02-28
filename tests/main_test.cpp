@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cassert>
 #include "TMatrix.h"
+#include "TPrint.h"
 
 int main()
 {
@@ -22,6 +23,13 @@ int main()
         std::cout << std::endl;
     }
     std::cout << std::endl << "Tests:" << std::endl;
+
+    assert(field.count() == 15);
+    std::cout << "OK" << std::endl;
+
+    assert(field.size().first == 3);
+    assert(field.size().second == 5);
+    std::cout << "OK" << std::endl;
 
     assert(field.at(1,3).value() == 18);
     std::cout << "OK" << std::endl;
@@ -49,6 +57,18 @@ int main()
     }
     std::cout << "Foreach - OK" << std::endl;
 
+    for (auto &it : field)
+    {
+        std::cout << it.value() << " ";
+    }
+    std::cout << "Ref Foreach - OK" << std::endl;
+
+    print(field);
+    std::cout << "OK" << std::endl;
+
+    printRef(field);
+    std::cout << "OK" << std::endl;
+
     auto it = field.begin();
     assert(it->value() == 2);
     std::cout << "OK" << std::endl;
@@ -65,15 +85,15 @@ int main()
     assert(field.at(0,2).value() == 5);
     std::cout << "OK" << std::endl;
 
-    const auto c_it = field.cbegin();
+    const TMatrix<int, 5, 3> mat(field);
+    const auto c_it = mat.cbegin();
     assert(c_it->value() == 2);
     std::cout << "OK" << std::endl;
 
-    c_it->value() = 1;
-    assert(c_it->value() == 1);
+    //c_it->value() = 1;
     std::cout << "OK" << std::endl;
 
-    assert(field.at(0,0).value() == 1);
+    assert(field.at(0,0).value() == 2);
     std::cout << "OK" << std::endl;
 
     assert(field.get(2,3).getCoordinates().first == 2);
@@ -102,7 +122,7 @@ int main()
             std::cout << c.value() << " ";
         std::cout << std::endl;
     }
-    std::cout << "\nForeach - OK" << std::endl;
+    std::cout << "Foreach - OK" << std::endl;
 
 
     return 0;

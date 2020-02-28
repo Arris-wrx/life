@@ -5,6 +5,7 @@
 #include <vector>
 #include <stdexcept>
 #include <random>
+#include <iostream>
 
 template<typename T, int _Col, int _Row>
 class TMatrix
@@ -21,6 +22,18 @@ public:
         }
     }
 
+    TMatrix(const TMatrix& M)
+    {
+        Matrix = new Cell[_Row * _Col];
+        for (size_t i = 0; i < _Row * _Col; ++i)
+        {
+            Matrix[i].val = M.Matrix[i].val;
+            Matrix[i]._matrix = this;
+            Matrix[i]._coord.A = i;
+            Matrix[i]._coord.toXY();
+        }
+    }
+
     ~TMatrix()
     {
         delete[] Matrix;
@@ -31,7 +44,7 @@ public:
     class Iterator;
     class const_Iterator;
 
-    size_t count()
+    size_t count() const
     {
         return _Row * _Col;
     }
@@ -69,6 +82,16 @@ public:
         return Iterator(this, count());
     }
 
+    const_Iterator begin() const
+    {
+        return const_Iterator(this);
+    }
+
+    const_Iterator end() const
+    {
+        return const_Iterator(this, count());
+    }
+
     const_Iterator cbegin() const
     {
         return const_Iterator(this);
@@ -94,6 +117,11 @@ public:
           return val;
         }
 
+        T value() const
+        {
+          return val;
+        }
+
         std::pair<int,int> getCoordinates()
         {
             return std::make_pair(_coord.X, _coord.Y);
@@ -107,6 +135,22 @@ public:
         Neighborhood_Iterator end()
         {
             return Neighborhood_Iterator(this, 8);
+        }
+
+        friend std::ostream& operator<< (std::ostream& out, const Cell& c)
+        {
+            out << c.val;
+            return out;
+        }
+
+        bool operator==(Cell &c) const
+        {
+            return val == c.val;
+        }
+
+        bool operator!=(Cell &c) const
+        {
+            return val != c.val;
         }
 
         class Neighborhood_Iterator
@@ -178,7 +222,7 @@ public:
     {
     public:
         Iterator(TMatrix* M) : _Matrix(M), _Pos(0) {}
-        Iterator(TMatrix* M, size_t N) : _Matrix(M), _Pos(N) {}
+        Iterator(TMatrix* M, const size_t N) : _Matrix(M), _Pos(N) {}
         Iterator(const Iterator& it)
         {
             _Matrix = it._Matrix;
@@ -229,7 +273,7 @@ public:
     {
     public:
         const_Iterator(const TMatrix* M) : _Matrix(M), _Pos(0) {}
-        const_Iterator(const TMatrix* M, size_t N) : _Matrix(M), _Pos(N) {}
+        const_Iterator(const TMatrix* M, const size_t N) : _Matrix(M), _Pos(N) {}
         const_Iterator(const const_Iterator& it)
         {
             _Matrix = it._Matrix;
@@ -242,12 +286,12 @@ public:
         }
         ~const_Iterator() {}
 
-        Cell& operator*() const
+        const Cell& operator*() const
         {
             return (*_Matrix)[_Pos];
         }
 
-        Cell* operator->() const
+        const Cell* operator->() const
         {
             return &(operator*());
         }
@@ -284,11 +328,12 @@ public:
 private:
     Cell* Matrix;
     Coord coord;
+
     Cell& operator[](const int A)
     {
         return *(Matrix + A);
     }
-    Cell& operator[](const int A) const
+    const Cell& operator[](const int A) const
     {
         return *(Matrix + A);
     }
