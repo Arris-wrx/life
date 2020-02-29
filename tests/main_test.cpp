@@ -122,7 +122,23 @@ int main()
             std::cout << c.value() << " ";
         std::cout << std::endl;
     }
-    std::cout << "Foreach - OK" << std::endl;
+    std::cout << "Cell Iterator - OK" << std::endl;
+
+    mat.print();
+    std::cout << "Print - OK" << std::endl;
+
+    TMatrix<int, 5, 3> mat1;
+    mat1 = field.calculate([](auto it){
+        int t {0};
+        for (auto c : it)
+            t += c.value();
+        return t;
+    });
+
+    assert(mat1.get(1,2).value() == 126);
+    mat1.print();
+    std::cout << "Calc - OK" << std::endl;
+
 
 
     return 0;
