@@ -14,7 +14,7 @@ int main()
     for (auto &a : mat)
     {
         int k = rand();
-        a.value() = (bool)(k%2);
+        a = (bool)(k%2);
     }
     std::cout << std::endl;
 

@@ -67,20 +67,22 @@ public:
 
     Cell& at(const int _x, const int _y)
     {
-        coord.X = _x;
-        coord.Y = _y;
-        coord.toA();
+        Coord c;
+        c.X = _x;
+        c.Y = _y;
+        c.toA();
 
-        return Matrix[coord.A];
+        return Matrix[c.A];
     }
 
-    Cell get(const int _x, const int _y)
+    Cell get(const int _x, const int _y) const
     {
-        coord.X = _x;
-        coord.Y = _y;
-        coord.toA();
+        Coord c;
+        c.X = _x;
+        c.Y = _y;
+        c.toA();
 
-        return Matrix[coord.A];
+        return Matrix[c.A];
     }
 
     void print() const
@@ -242,6 +244,14 @@ public:
                 return *this;
 
             val = c.val;
+        }
+
+        Cell& operator= (const T t)
+        {
+            if (t == this->val)
+                return *this;
+
+            val = t;
         }
 
         bool operator==(Cell &c) const
@@ -493,7 +503,7 @@ public:
 
 private:
     Cell* Matrix;
-    Coord coord;
+    //Coord coord;
 
     Cell& operator[](const int A)
     {

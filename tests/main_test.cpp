@@ -12,14 +12,14 @@ int main()
     for (int i = 0; i < 3; i++)
         for(int j = 0; j < 5; j++)
             {
-                field.at(i,j).value() = (++a)*2;
+                field.at(i,j) = (++a)*2;
                 //std::cout << field.at(i,j).value << "\t";
             }
     std::cout << std::endl;
     for (int i=-1; i>=-3; i--)
     {
         for (int j=-1; j>=-5; j--)
-           std::cout << field.get(i,j).value() << "\t";
+           std::cout << field.get(i,j) << "\t";
         std::cout << std::endl;
     }
     std::cout << std::endl << "Tests:" << std::endl;
@@ -43,23 +43,24 @@ int main()
     assert(field.at(-4,-13).value() == 26);
     std::cout << "OK" << std::endl;
 
-    field.at(1,3).value() = 17;
+    field.at(1,3) = 17;
     assert(field.get(1,3).value() == 17);
     std::cout << "OK" << std::endl;
 
-    //field.get(1,3).value = 18;
+    field.get(1,3) = 18; // does not modificate
+    assert(field.get(1,3).value() == 17);
     std::cout << "OK" << std::endl;
 
 
     for (auto a : field)
     {
-        std::cout << a.value() << " ";
+        std::cout << a << " ";
     }
     std::cout << "Foreach - OK" << std::endl;
 
     for (auto &it : field)
     {
-        std::cout << it.value() << " ";
+        std::cout << it << " ";
     }
     std::cout << "Ref Foreach - OK" << std::endl;
 
@@ -78,7 +79,7 @@ int main()
     std::cout << "OK" << std::endl;
 
     ++it;
-    it->value() = 5;
+    *(it) = 5;
     assert(it->value() == 5);
     std::cout << "OK" << std::endl;
 
@@ -90,7 +91,7 @@ int main()
     assert(c_it->value() == 2);
     std::cout << "OK" << std::endl;
 
-    //c_it->value() = 1;
+    //*(c_it) = 1;
     std::cout << "OK" << std::endl;
 
     assert(field.at(0,0).value() == 2);
@@ -119,7 +120,7 @@ int main()
     {
         std::cout << a.value() << ": ";
         for (auto c : a)
-            std::cout << c.value() << " ";
+            std::cout << c << " ";
         std::cout << std::endl;
     }
     std::cout << "Cell Iterator - OK" << std::endl;
