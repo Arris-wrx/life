@@ -3,6 +3,7 @@
 
 #include <iostream>
 
+// template array print func
 template < class T >
 void print(T m) {
     for (auto &it : m) {
@@ -11,6 +12,7 @@ void print(T m) {
     std::cout << std::endl;
 }
 
+// template array print ref func
 template < class T >
 void printRef(const T& m) {
     for (auto &it : m) {

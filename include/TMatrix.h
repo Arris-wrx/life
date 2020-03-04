@@ -306,8 +306,15 @@ public:
         class Neighborhood_Iterator
         {
         public:
-            Neighborhood_Iterator(Cell* C) : _cell(C), _aroundPos(0) {}
-            Neighborhood_Iterator(Cell* C, const size_t N) : _cell(C), _aroundPos(N) {}
+            /* iterator traits */
+            using difference_type = std::ptrdiff_t;
+            using value_type = Cell;
+            using reference = Cell&;
+            using pointer = Cell*;
+            using iterator_category = std::forward_iterator_tag;
+
+            Neighborhood_Iterator(pointer C) : _cell(C), _aroundPos(0) {}
+            Neighborhood_Iterator(pointer C, const size_t N) : _cell(C), _aroundPos(N) {}
             Neighborhood_Iterator(const Neighborhood_Iterator& it) {
                 _cell = it._cell;
                 _aroundPos = it._aroundPos;
@@ -315,7 +322,7 @@ public:
 
             ~Neighborhood_Iterator() {}
 
-            Cell& operator*()
+            reference operator*()
             {
                 // calculate shift
                 Coord c;
@@ -325,7 +332,7 @@ public:
                 return (*_cell->_matrix)[c.A];
             }
 
-            Cell* operator->()
+            pointer operator->()
             {
                 return &(operator*());
             }
@@ -359,7 +366,7 @@ public:
             }
 
         private:
-            Cell* _cell;  // pointer to source cell
+            pointer _cell;  // pointer to source cell
             size_t _aroundPos; // current shift position
             std::vector<std::pair<int, int>> Neighborhoods = { {-1,-1},{-1,0},{-1,1},{0,-1},{0,1},{1,-1},{1,0},{1,1} };  // vector of shift coordinates rule
         };
@@ -370,8 +377,15 @@ public:
         class const_Neighborhood_Iterator
         {
         public:
-            const_Neighborhood_Iterator(const Cell* C) : _cell(C), _aroundPos(0) {}
-            const_Neighborhood_Iterator(const Cell* C, const size_t N) : _cell(C), _aroundPos(N) {}
+            /* iterator traits */
+            using difference_type = std::ptrdiff_t;
+            using value_type = Cell;
+            using reference = const Cell&;
+            using pointer = const Cell*;
+            using iterator_category = std::forward_iterator_tag;
+
+            const_Neighborhood_Iterator(pointer C) : _cell(C), _aroundPos(0) {}
+            const_Neighborhood_Iterator(pointer C, const size_t N) : _cell(C), _aroundPos(N) {}
             const_Neighborhood_Iterator(const const_Neighborhood_Iterator& it) {
                 _cell = it._cell;
                 _aroundPos = it._aroundPos;
@@ -383,7 +397,7 @@ public:
 
             ~const_Neighborhood_Iterator() {}
 
-            const Cell& operator*() const
+            reference operator*() const
             {
                 Coord c;
                 c.X = _cell->_coord.X + Neighborhoods.at(_aroundPos).first;
@@ -392,7 +406,7 @@ public:
                 return (*_cell->_matrix)[c.A];
             }
 
-            const Cell* operator->() const
+            pointer operator->() const
             {
                 return &(operator*());
             }
@@ -426,7 +440,7 @@ public:
             }
 
         private:
-            const Cell* _cell;
+            pointer _cell;
             size_t _aroundPos;
             std::vector<std::pair<int, int>> Neighborhoods = { {-1,-1},{-1,0},{-1,1},{0,-1},{0,1},{1,-1},{1,0},{1,1} };
         };
@@ -445,6 +459,13 @@ public:
     class Iterator
     {
     public:
+        /* iterator traits */
+        using difference_type = std::ptrdiff_t;
+        using value_type = Cell;
+        using reference = Cell&;
+        using pointer = Cell*;
+        using iterator_category = std::forward_iterator_tag;
+
         Iterator(TMatrix* M) : _Matrix(M), _Pos(0) {}
         Iterator(TMatrix* M, const size_t N) : _Matrix(M), _Pos(N) {}
         Iterator(const Iterator& it)
@@ -454,12 +475,12 @@ public:
         }
         ~Iterator() {}
 
-        Cell& operator*()
+        reference operator*()
         {
             return (*_Matrix)[_Pos];
         }
 
-        Cell* operator->()
+        pointer operator->()
         {
             return &(operator*());
         }
@@ -499,6 +520,13 @@ public:
     class const_Iterator
     {
     public:
+        /* iterator traits */
+        using difference_type = std::ptrdiff_t;
+        using value_type = Cell;
+        using reference = const Cell&;
+        using pointer = const Cell*;
+        using iterator_category = std::forward_iterator_tag;
+
         const_Iterator(const TMatrix* M) : _Matrix(M), _Pos(0) {}
         const_Iterator(const TMatrix* M, const size_t N) : _Matrix(M), _Pos(N) {}
         const_Iterator(const const_Iterator& it)
@@ -513,12 +541,12 @@ public:
         }
         ~const_Iterator() {}
 
-        const Cell& operator*() const
+        reference operator*() const
         {
             return (*_Matrix)[_Pos];
         }
 
-        const Cell* operator->() const
+        pointer operator->() const
         {
             return &(operator*());
         }
