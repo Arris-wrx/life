@@ -8,10 +8,14 @@
 #include <iostream>
 #include <algorithm>
 
+/**************************/
+/* template class TMatrix */
+/**************************/
 template<typename T, int _Col, int _Row>
 class TMatrix
 {
 public:
+
     TMatrix()
     {
         Matrix = new Cell[_Row * _Col];
@@ -50,21 +54,26 @@ public:
         delete[] Matrix;
     }
 
-    class Cell;
+    class Cell;  // hidden class TMatrix::Cell, a wrapper on one cell of TMatrix
     friend class Cell;
-    class Iterator;
-    class const_Iterator;
+    class Iterator; // TMatrix::Iterator
+    class const_Iterator; //TMatrix::const_Iterator
 
+
+    // return count of elements
     size_t count() const
     {
         return _Row * _Col;
     }
 
+    // return pair of demensions <Row, Col>
     std::pair<size_t, size_t> size()
     {
         return std::make_pair(_Row, _Col);
     }
 
+    // provide link to the Cell element of Matrix by coordinates (col, row)
+    // impossible out of range
     Cell& at(const int _x, const int _y)
     {
         Coord c;
@@ -75,6 +84,8 @@ public:
         return Matrix[c.A];
     }
 
+    // return const element of Matrix by coordinates (col, row)
+    // impossible out of range
     Cell get(const int _x, const int _y) const
     {
         Coord c;
@@ -85,6 +96,7 @@ public:
         return Matrix[c.A];
     }
 
+    // print Matrix
     void print() const
     {
         for (size_t i = 0; i < _Row; ++i)
@@ -97,6 +109,7 @@ public:
         }
     }
 
+    // assignment operator
     TMatrix& operator= (const TMatrix& M)
     {
         if (&M == this)
@@ -115,6 +128,7 @@ public:
         return *this;
     }
 
+    // assignment move operator
     TMatrix& operator= (TMatrix&& M)
     {
         if (&M == this)
@@ -132,6 +146,9 @@ public:
         return *this;
     }
 
+    // provide way to modifficate whole Matrix by the rule "foo"
+    // Handler "foo" must return T
+    // calculate returns new instance, original Matrix saved
     TMatrix calculate(T foo(const Cell& it))
     {
         TMatrix Dest;
@@ -146,43 +163,56 @@ public:
         return Dest;
     }
 
+    /* Iterations func */
+    // return start position (0,0)
     Iterator begin()
     {
         return Iterator(this);
     }
 
+    // return position after last (col, row)
     Iterator end()
     {
         return Iterator(this, count());
     }
 
+    // return start position (0,0) const
     const_Iterator begin() const
     {
         return const_Iterator(this);
     }
 
+    // return position after last (col, row) const
     const_Iterator end() const
     {
         return const_Iterator(this, count());
     }
 
+    // return start position (0,0) const
     const_Iterator cbegin() const
     {
         return const_Iterator(this);
     }
+
+    // return position after last (col, row) const
     const_Iterator cend() const
     {
         return const_Iterator(this, count());
     }
 private:
-    struct Coord;
+    struct Coord;  // for calculating. Not for storage
 public:
+    /********************************************
+     * Class Cell
+     * hidden class provides access to Matrix cell
+     *********************************************/
     class Cell
     {
     public:
         ~Cell() {}
         class Neighborhood_Iterator;
         class const_Neighborhood_Iterator;
+
         friend class Neighborhood_Iterator;
         friend class const_Neighborhood_Iterator;
         friend class TMatrix;
@@ -197,10 +227,13 @@ public:
           return val;
         }
 
+        // return coordinates of this Cell
         std::pair<int,int> getCoordinates()
         {
             return std::make_pair(_coord.X, _coord.Y);
         }
+
+        /* Iterations func */
 
         Neighborhood_Iterator begin()
         {
@@ -232,11 +265,14 @@ public:
             return const_Neighborhood_Iterator(this, 8);
         }
 
+        // translate Cell to out stream as type T
         friend std::ostream& operator<< (std::ostream& out, const Cell& c)
         {
             out << c.val;
             return out;
         }
+
+        // assignment operator
         Cell& operator= (const Cell& c)
         {
             if (&c == this)
@@ -245,6 +281,7 @@ public:
             val = c.val;
         }
 
+        // assignment operator for type T
         Cell& operator= (const T t)
         {
             if (t == this->val)
@@ -263,6 +300,9 @@ public:
             return val != c.val;
         }
 
+        /*
+         * Iterator by neighborhoods cells
+         */
         class Neighborhood_Iterator
         {
         public:
@@ -277,6 +317,7 @@ public:
 
             Cell& operator*()
             {
+                // calculate shift
                 Coord c;
                 c.X = _cell->_coord.X + Neighborhoods.at(_aroundPos).first;
                 c.Y = _cell->_coord.Y + Neighborhoods.at(_aroundPos).second;
@@ -318,11 +359,14 @@ public:
             }
 
         private:
-            Cell* _cell;
-            size_t _aroundPos;
-            std::vector<std::pair<int, int>> Neighborhoods = { {-1,-1},{-1,0},{-1,1},{0,-1},{0,1},{1,-1},{1,0},{1,1} };
+            Cell* _cell;  // pointer to source cell
+            size_t _aroundPos; // current shift position
+            std::vector<std::pair<int, int>> Neighborhoods = { {-1,-1},{-1,0},{-1,1},{0,-1},{0,1},{1,-1},{1,0},{1,1} };  // vector of shift coordinates rule
         };
 
+        /*
+         * Const Iterator by neighborhoods cells
+         */
         class const_Neighborhood_Iterator
         {
         public:
@@ -388,13 +432,16 @@ public:
         };
 
     private:
-        Cell() : _matrix(nullptr) {}
+        Cell() : _matrix(nullptr) {} // hidden cell constructor
 
-        T val;
-        TMatrix* _matrix;
-        TMatrix::Coord _coord;
+        T val; // Cell value
+        TMatrix* _matrix; // pointer to cell holder
+        TMatrix::Coord _coord; // cell coordinates
     };
 
+    /*******************************************
+     *  TMatrix::Iterator standart iterator
+     * *****************************************/
     class Iterator
     {
     public:
@@ -442,10 +489,13 @@ public:
         }
 
     private:
-        TMatrix* _Matrix;
-        size_t _Pos;
+        TMatrix* _Matrix; // pointer to object holder
+        size_t _Pos; // current iterator position
     };
 
+    /****************************************************
+     *  TMatrix::const_Iterator standart const iterator
+     * *************************************************/
     class const_Iterator
     {
     public:
@@ -498,23 +548,25 @@ public:
         }
 
     private:
-        const TMatrix* _Matrix;
-        size_t _Pos;
+        const TMatrix* _Matrix;  // pointer to object holder
+        size_t _Pos; // current iterator position
     };
 
 private:
-    Cell* Matrix;
-    //Coord coord;
+    Cell* Matrix; // main pointer to array
 
     Cell& operator[](const int A)
     {
         return *(Matrix + A);
     }
+
     const Cell& operator[](const int A) const
     {
         return *(Matrix + A);
     }
 
+    // stuct Coord only for translate from two demensions coordinates to one demensions and back
+    // and using unlimited coordinates for  ciclic borders
     struct Coord
     {
         int X;
