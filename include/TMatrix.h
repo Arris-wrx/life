@@ -180,7 +180,6 @@ public:
     class Cell
     {
     public:
-        Cell() : _matrix(nullptr) {}
         ~Cell() {}
         class Neighborhood_Iterator;
         class const_Neighborhood_Iterator;
@@ -389,6 +388,8 @@ public:
         };
 
     private:
+        Cell() : _matrix(nullptr) {}
+
         T val;
         TMatrix* _matrix;
         TMatrix::Coord _coord;
