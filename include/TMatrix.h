@@ -11,7 +11,7 @@
 /**************************/
 /* template class TMatrix */
 /**************************/
-template<typename T, int _Col, int _Row>
+template<typename T, size_t _Col, size_t _Row>
 class TMatrix
 {
 public:
