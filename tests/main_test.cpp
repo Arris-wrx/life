@@ -15,6 +15,9 @@ int main()
                 field.at(i,j) = (++a)*2;
                 //std::cout << field.at(i,j).value << "\t";
             }
+
+    field.print();
+
     std::cout << std::endl;
     for (int i=-1; i>=-3; i--)
     {

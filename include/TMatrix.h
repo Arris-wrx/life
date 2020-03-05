@@ -610,7 +610,7 @@ private:
         void toXY()
         {
             if (A >= _Row * _Col)
-                throw std::out_of_range("Field x or y");
+                throw std::out_of_range("Field x or y out of range!");
             X = A / _Col;
             Y = A % _Col;
         }
@@ -620,11 +620,17 @@ private:
             if (X >= 0)
                 X = X % _Row;
             else
-                X = _Row + ((X % _Row) == 0 ? -_Row : (X % _Row));
+            {
+                int div_x = std::div(X, _Row).rem;
+                X = _Row + (div_x == 0 ? -_Row : div_x);
+            }
             if (Y >= 0)
                 Y = Y % _Col;
             else
-                Y = _Col + ((Y % _Col) == 0 ? -_Col : (Y % _Col));
+            {
+                int div_y = std::div(Y, _Col).rem;
+                Y = _Col + (div_y == 0 ? -_Col : div_y);
+            }
         }
     };
 };
