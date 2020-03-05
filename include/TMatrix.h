@@ -580,6 +580,7 @@ public:
         size_t _Pos; // current iterator position
     };
 
+
 private:
     Cell* Matrix; // main pointer to array
 

@@ -2,6 +2,7 @@
 #include <cassert>
 #include "TMatrix.h"
 #include "TPrint.h"
+#include "TMatrixView.h"
 
 int main()
 {
@@ -143,7 +144,13 @@ int main()
     mat1.print();
     std::cout << "Calc - OK" << std::endl;
 
+    MatrixView <int, 5, 3> view(field, 1, 4, 0, 2);
+    view.print();
+    std::cout << "View - OK" << std::endl;
 
+    view.at(1,1) = 10;
+    view.print();
+    field.print();
 
     return 0;
 }

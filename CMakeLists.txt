@@ -20,4 +20,3 @@ include_directories(${PROJECT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/src)
 
 add_subdirectory(app)
 add_subdirectory(tests)
-
